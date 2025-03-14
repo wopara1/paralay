@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from dotenv import load_dotenv, find_dotenv
 
-load_dotenv(find_dotenv())
+load_dotenv(find_dotenv())  
 
 # Define the download directory inside the main directory
 main_dir = os.path.join(os.getcwd(), "csv")  # Creates 'csv' folder in the current working directory
