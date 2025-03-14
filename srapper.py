@@ -12,16 +12,19 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
-# Define the download directory
-download_dir = "/Users/emmanuelwopara/Desktop/Code/paralay/csv"
+# Define the download directory inside the main directory
+main_dir = os.path.join(os.getcwd(), "csv")  # Creates 'csv' folder in the current working directory
+
+# Ensure the download directory exists
+os.makedirs(main_dir, exist_ok=True)
 
 # Set up Chrome options
 chrome_options = Options()
-chrome_options.add_argument("--headless=new")  # Enable headless mode
+#chrome_options.add_argument("--headless=new")  # Enable headless mode
 chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
 chrome_options.add_argument("--window-size=1920,1080")  # Set window size
 chrome_options.add_experimental_option("prefs", {
-    "download.default_directory": download_dir,  # Set default download directory
+    "download.default_directory": main_dir,  # Set default download directory
     "download.prompt_for_download": False,  # Disable download prompt
     "download.directory_upgrade": True,  # Ensure the directory is created if not exists
     "safebrowsing.enabled": True  # Enable safe browsing
@@ -62,12 +65,12 @@ def is_today_data_downloaded(directory):
 
 try:
     # Check if today's data has already been downloaded
-    if is_today_data_downloaded(download_dir):
+    if is_today_data_downloaded(main_dir):
         print("Today's data has already been downloaded.")
     else:
         # Navigate to the login page
         driver.get("https://propfinder.app/login")
-        WebDriverWait(driver, 8).until(EC.presence_of_element_located((By.ID, "email")))
+        WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.ID, "email")))
 
         # Locate the email and password fields
         email_field = driver.find_element(By.ID, "email")
@@ -92,7 +95,7 @@ try:
         export_button.click()
 
         # Wait for the download options to appear and click 'Download as CSV'
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//li[contains(text(), 'Download as CSV')]")))
+        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//li[contains(text(), 'Download as CSV')]")))
         download_csv_option = driver.find_element(By.XPATH, "//li[contains(text(), 'Download as CSV')]")
         download_csv_option.click()
 
@@ -100,11 +103,11 @@ try:
         expected_filename = "PropFinder.csv"
 
         # Wait for the file to be downloaded
-        if is_file_downloaded(download_dir, expected_filename):
+        if is_file_downloaded(main_dir, expected_filename):
             print(f"File '{expected_filename}' has been downloaded successfully.")
             
             # Rename the file with the current date
-            new_filename = rename_file_with_date(download_dir, expected_filename)
+            new_filename = rename_file_with_date(main_dir, expected_filename)
             print(f"File has been renamed to '{new_filename}'")
         else:
             print(f"File '{expected_filename}' was not downloaded within the expected time.")
