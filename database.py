@@ -1,10 +1,27 @@
-from pydantic_settings import BaseSettings
+import os
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv, find_dotenv
 
-class Settings(BaseSettings):
-    SECRET_KEY: str
-    DB_NAME: str
-    DB_USER: str
-    DB_PASSWORD: str
-    DB_HOST: str
-    DB_PORT: str
-    CORS_ALLOWED_ORIGINS: str
+load_dotenv(find_dotenv())  
+
+# Database Environmnent
+db_user = os.getenv("DB_USERNAME")
+db_password = os.getenv("DB_PASSWORD")
+db_host = os.getenv("DB_HOST")
+db_port = os.getenv("DB_PORT")
+db_name = os.getenv("DB_NAME")
+
+SQLALCHEMY_DATABASE_URL = 'postgresql://{db_user}:{db_password}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
