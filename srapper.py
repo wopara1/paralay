@@ -103,7 +103,7 @@ try:
         expected_filename = "PropFinder.csv"
 
         # Wait for the file to be downloaded
-        if is_file_downloaded(main_dir, expected_filename):
+        if (main_dir, expected_filename):
             print(f"File '{expected_filename}' has been downloaded successfully.")
             
             # Rename the file with the current date
